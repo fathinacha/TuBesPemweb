@@ -6,13 +6,10 @@ use App\Http\Controllers\LingkunganController;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
 });
 
 Auth::routes();
@@ -23,4 +20,4 @@ Route::resource('lingkungans', LingkunganController::class);
 Route::resource('wargas', WargaController::class);
 Route::resource('tagihans', TagihanController::class);
 Route::resource('pembayarans', PembayaranController::class);
-
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
