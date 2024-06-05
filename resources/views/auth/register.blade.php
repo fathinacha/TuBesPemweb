@@ -54,6 +54,11 @@
                             <button type="submit" class="btn btn-primary w-100">{{ __('Register') }}</button>
                         </div>
                     </form>
+
+                    <!-- Navigasi ke halaman login -->
+                    <div class="text-center mt-3">
+                        <p>Sudah punya akun? <a href="{{ route('login') }}" class="text-decoration-none">Login</a></p>
+                    </div>
                 </div>
             </div>
         </div>

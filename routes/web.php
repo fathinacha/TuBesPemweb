@@ -20,4 +20,4 @@ Route::resource('lingkungans', LingkunganController::class);
 Route::resource('wargas', WargaController::class);
 Route::resource('tagihans', TagihanController::class);
 Route::resource('pembayarans', PembayaranController::class);
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth'); // Terapkan middleware auth untuk dashboard
