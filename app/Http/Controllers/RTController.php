@@ -42,14 +42,17 @@ class RTController extends Controller
     }
 
     public function update(Request $request, RT $rt)
-    {
-        $request->validate([
-            'nama' => 'required',
-        ]);
+{
+    $request->validate([
+        'nama_rt' => 'required|string|max:255',
+        'alamat' => 'required|string|max:255',
+        'ketua_rt' => 'required|string|max:255',
+    ]);
 
-        $rt->update($request->all());
-        return redirect()->route('rts.index');
-    }
+    $rt->update($request->all());
+
+    return redirect()->route('rts.index')->with('success', 'Data RT berhasil diperbarui.');
+}
 
     public function destroy(RT $rt)
     {
