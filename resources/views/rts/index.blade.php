@@ -9,17 +9,13 @@
             <thead class="table-dark">
                 <tr>
                     <th class="text-center">Nama RT</th>
-                    <th class="text-center">Alamat</th>
-                    <th class="text-center">Ketua RT</th>
                     <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($rts as $rt)
                 <tr>
-                    <td>{{ $rt->nama_rt }}</td>
-                    <td>{{ $rt->alamat }}</td>
-                    <td>{{ $rt->ketua_rt }}</td>
+                    <td>{{ $rt->nama }}</td>
                     <td class="text-center">
                         <a href="{{ route('rts.edit', $rt->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i> Edit</a>
                         <form action="{{ route('rts.destroy', $rt->id) }}" method="POST" class="d-inline">
