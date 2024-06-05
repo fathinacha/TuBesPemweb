@@ -21,3 +21,4 @@ Route::resource('wargas', WargaController::class);
 Route::resource('tagihans', TagihanController::class);
 Route::resource('pembayarans', PembayaranController::class);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth'); // Terapkan middleware auth untuk dashboard
+Route::get('rts/{rt}/edit', [RTController::class, 'edit'])->name('rts.edit');

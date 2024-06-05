@@ -2,49 +2,47 @@
 
 @section('content')
 <!-- START FORM -->
-<form action="{{ route('wargas.store') }}" method="POST">
-    @csrf
-    <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <div class="mb-3 row">
-            <label for="nama" class="col-sm-2 col-form-label">Nama</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name='nama' id="nama" required>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Warga Baru</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+</head>
+<body class="bg-light">
+    <div class="container">
+        <h1 class="text-center mb-4">Data Warga Baru</h1>
+        <form action="{{ route('wargas.store') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label for="nama" class="form-label">Nama:</label>
+                <input type="text" class="form-control" id="nama" name="nama" required>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name='alamat' id="alamat" required>
+            <div class="mb-3">
+                <label for="alamat" class="form-label">Alamat:</label>
+                <input type="text" class="form-control" id="alamat" name="alamat" required>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="no_telp" class="col-sm-2 col-form-label">Nomor Telepon</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name='no_telp' id="no_telp">
+            <div class="mb-3">
+                <label for="no_telp" class="form-label">Nomor Telepon:</label>
+                <input type="text" class="form-control" id="no_telp" name="no_telp">
             </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="email" class="col-sm-2 col-form-label">Email</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name='email' id="email">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="text" class="form-control" id="email" name="email">
             </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="id_rt" class="col-sm-2 col-form-label">RT</label>
-            <div class="col-sm-10">
-                <select class="form-control" name='id_rt' id="id_rt" required>
+            <div class="mb-3">
+                <label for="id_rt" class="form-label">RT:</label>
+                <select class="form-control" id="id_rt" name="id_rt" required>
                     @foreach($rts as $rt)
                         <option value="{{ $rt->id }}">{{ $rt->nama_rt }}</option>
                     @endforeach
                 </select>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-sm-10 offset-sm-2">
+            <div class="mb-3">
                 <button type="submit" class="btn btn-primary" name="submit">SIMPAN</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</body>
+</html>
 <!-- AKHIR FORM -->
 @endsection
