@@ -19,14 +19,17 @@ class RTController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-        ]);
+{
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'kode' => 'required|string|max:10|unique:rts,kode',
+    ]);
 
-        RT::create($request->all());
-        return redirect()->route('rts.index');
-    }
+    RT::create($request->all());
+
+    return redirect()->route('rts.index')->with('success', 'RT berhasil dibuat.');
+}
+
 
     public function edit(RT $rt)
     {
