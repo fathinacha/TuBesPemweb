@@ -20,21 +20,17 @@ class RTController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_rt' => 'required|string|max:50',
-            'alamat' => 'required|string|max:200',
-            'ketua_rt' => 'required|string|max:100',
+        $data = $request->validate([
+            'id' => 'required|integer',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'ketua' => 'required|string|max:255',
         ]);
 
-        RT::create([
-            'nama_rt' => $request->nama_rt,
-            'alamat' => $request->alamat,
-            'ketua_rt' => $request->ketua_rt,
-        ]);
+        RT::create($data);
 
-        return redirect()->route('rts.index')->with('success', 'RT berhasil dibuat.');
+        return redirect()->route('rts.index')->with('success', 'RT created successfully.');
     }
-
 
     public function edit(RT $rt)
     {
@@ -43,17 +39,20 @@ class RTController extends Controller
 
     public function update(Request $request, RT $rt)
     {
-        $request->validate([
-            'nama' => 'required',
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'ketua' => 'required|string|max:255',
         ]);
 
-        $rt->update($request->all());
-        return redirect()->route('rts.index');
+        $rt->update($data);
+
+        return redirect()->route('rts.index')->with('success', 'RT updated successfully.');
     }
 
     public function destroy(RT $rt)
     {
         $rt->delete();
-        return redirect()->route('rts.index');
+        return redirect()->route('rts.index')->with('success', 'RT deleted successfully.');
     }
 }

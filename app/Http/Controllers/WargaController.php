@@ -1,7 +1,5 @@
 <?php
 
-// app/Http/Controllers/WargaController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Warga;
@@ -27,8 +25,6 @@ class WargaController extends Controller
         $request->validate([
             'nama' => 'required',
             'alamat' => 'required',
-            'no_telp' => 'nullable|string',
-            'email' => 'nullable|email',
             'id_rt' => 'required|exists:rts,id',
         ]);
 
@@ -47,8 +43,6 @@ class WargaController extends Controller
         $request->validate([
             'nama' => 'required',
             'alamat' => 'required',
-            'no_telp' => 'nullable|string',
-            'email' => 'nullable|email',
             'id_rt' => 'required|exists:rts,id',
         ]);
 
