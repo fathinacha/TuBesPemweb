@@ -9,6 +9,12 @@
                     <h3 class="fw-bold my-4">{{ __('Register') }}</h3>
                 </div>
                 <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success mb-4" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
