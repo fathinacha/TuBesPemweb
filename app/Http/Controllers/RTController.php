@@ -27,16 +27,15 @@ class RTController extends Controller
         ], [
             'nama_rt.unique' => 'Nama RT sudah digunakan.',
         ]);
-    
+
         RT::create([
             'nama_rt' => $request->nama_rt,
             'alamat' => $request->alamat,
             'ketua_rt' => $request->ketua_rt,
         ]);
-    
+
         return redirect()->route('rts.index')->with('success', 'RT berhasil dibuat.');
     }
-    
 
     public function edit(RT $rt)
     {
@@ -46,14 +45,19 @@ class RTController extends Controller
     public function update(Request $request, RT $rt)
     {
         $request->validate([
-            'nama_rt' => 'required|string|max:50|unique:rts,nama_rt',
+            'nama_rt' => 'required|string|max:50|unique:rts,nama_rt,' . $rt->id,
             'alamat' => 'required|string|max:200',
             'ketua_rt' => 'required|string|max:100',
         ], [
             'nama_rt.unique' => 'Nama RT sudah digunakan.',
         ]);
 
-        $rt->update($request->all());
+        $rt->update([
+            'nama_rt' => $request->nama_rt,
+            'alamat' => $request->alamat,
+            'ketua_rt' => $request->ketua_rt,
+        ]);
+
         return redirect()->route('rts.index')->with('success', 'RT berhasil diperbarui.');
     }
 
