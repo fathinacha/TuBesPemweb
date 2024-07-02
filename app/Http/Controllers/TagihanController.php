@@ -7,6 +7,12 @@ use App\Models\Warga;
 use Illuminate\Http\Request;
 use App\Exports\TagihansExport;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Illuminate\Support\Facades\Log;
 
 class TagihanController extends Controller
 {
@@ -63,6 +69,16 @@ class TagihanController extends Controller
             'tanggal_bayar' => 'nullable|date',
         ]);
 
+        // Cek apakah sudah ada tagihan untuk bulan dan tahun yang sama
+        $existingTagihan = Tagihan::where('id_warga', $request->id_warga)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->first();
+
+        if ($existingTagihan) {
+            return redirect()->route('tagihans.create')->withErrors(['error' => 'Tagihan untuk bulan dan tahun yang dipilih sudah ada.']);
+        }
+
         Tagihan::create($request->all());
         return redirect()->route('tagihans.index')->with('success', 'Data tagihan berhasil dibuat.');
     }
@@ -93,8 +109,94 @@ class TagihanController extends Controller
         return redirect()->route('tagihans.index')->with('success', 'Data tagihan berhasil dihapus.');
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new TagihansExport, 'riwayat_tagihan.xlsx');
+    $bulan = $request->query('bulan');
+    Log::info('Bulan yang dipilih: ' . $bulan);
+
+    // Ambil data tagihan berdasarkan bulan
+    $query = Tagihan::with(['warga', 'warga.rt', 'pembayarans']);
+    if ($bulan) {
+        $query->where('bulan', $bulan);
     }
-}
+    $tagihans = $query->get();
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $headers = ['No', 'Nama Warga', 'RT', 'Tagihan untuk Bulan', 'Tahun', 'Jumlah Tagihan', 'Total Terbayar', 'Belum Terbayar', 'Status'];
+    $sheet->fromArray($headers, null, 'A1');
+
+    $rowNumber = 2;
+    $no = 1;
+    foreach ($tagihans as $tagihan) {
+        $totalPembayaran = $tagihan->pembayarans->sum('jumlah_dibayar');
+        $belumTerbayar = max(0, $tagihan->jumlah_tagihan - $totalPembayaran);
+        $status = ($totalPembayaran >= $tagihan->jumlah_tagihan) ? 'Lunas' : 'Belum Lunas';
+
+        $sheet->setCellValue('A' . $rowNumber, $no);
+        $sheet->setCellValue('B' . $rowNumber, $tagihan->warga->nama);
+        $sheet->setCellValue('C' . $rowNumber, $tagihan->warga->rt->nama_rt);
+        $sheet->setCellValue('D' . $rowNumber, date('F', mktime(0, 0, 0, $tagihan->bulan, 1)));
+        $sheet->setCellValue('E' . $rowNumber, $tagihan->tahun);
+        $sheet->setCellValue('F' . $rowNumber, (float)$tagihan->jumlah_tagihan);
+        $sheet->setCellValue('G' . $rowNumber, (float)$totalPembayaran);
+        $sheet->setCellValue('H' . $rowNumber, (float)$belumTerbayar);
+        $sheet->setCellValue('I' . $rowNumber, $status);
+
+        $sheet->getStyle('A' . $rowNumber . ':I' . $rowNumber)->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $rowNumber++;
+        $no++;
+    }
+
+    $headerStyle = [
+        'font' => [
+            'bold' => true,
+            'color' => ['argb' => 'FFFFFF'],
+        ],
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'startColor' => ['argb' => '0d6efd'],
+        ],
+        'alignment' => [
+            'horizontal' => Alignment::HORIZONTAL_CENTER,
+            'vertical' => Alignment::VERTICAL_CENTER,
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => ['argb' => '000000'],
+            ],
+        ],
+    ];
+    $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
+
+    $allBorders = [
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => ['argb' => '000000'],
+            ],
+        ],
+    ];
+    $sheet->getStyle('A1:I' . ($rowNumber - 1))->applyFromArray($allBorders);
+
+    foreach (range('A', 'I') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    $writer = new Xlsx($spreadsheet);
+    $fileName = 'riwayat_tagihan_' . $bulan . '.xlsx';
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    $writer->save('php://output');
+    exit;
+    }
+
+}    
